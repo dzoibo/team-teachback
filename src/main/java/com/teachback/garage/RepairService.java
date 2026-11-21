@@ -8,15 +8,18 @@ import java.util.List;
 public class RepairService {
 
     private final CarRepository repository;
+    private final NotificationService notifications;
 
-    public RepairService(CarRepository repository) {
+    public RepairService(CarRepository repository, NotificationService notifications) {
         this.repository = repository;
+        this.notifications = notifications;
     }
 
-    public void repair(Long carId) {
+    public Car repair(Long carId) {
         Car car = repository.findById(carId);
-        System.out.println("Repairing " + car.getBrand() + " " + car.getModel()
-                + " for " + car.getOwnerName());
+        notifications.send("Your " + car.getBrand() + " " + car.getModel()
+                + " is repaired, " + car.getOwnerName());
+        return car;
     }
 
     public List<Car> findAll() {
