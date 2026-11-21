@@ -1,14 +1,12 @@
 package com.teachback.garage;
-
-import org.springframework.stereotype.Repository;
+ 
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ConcurrentHashMap;
-
-@Repository
+ 
 public class InMemoryCarRepository implements CarRepository {
 
     private final Map<Long, Car> cars = new ConcurrentHashMap<>();
