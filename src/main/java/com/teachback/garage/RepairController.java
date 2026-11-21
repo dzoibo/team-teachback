@@ -27,4 +27,12 @@ public class RepairController {
     public Car repair(@PathVariable Long id) {
         return repairService.repair(id);
     }
+    
+    // Ref Slide 24: Alisha brings her Toyota Corolla to the garage
+    @GetMapping("/alisha")
+    public String registerAlisha() {
+        Car car = new Car(1007L, "Toyota", "Corolla", "Alisha");
+        int rows = repairService.registerCar(car);
+        return "Rows inserted: " + rows;
+    }
 }

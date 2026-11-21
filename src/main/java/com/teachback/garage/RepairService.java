@@ -25,4 +25,8 @@ public class RepairService {
     public List<Car> findAll() {
         return repository.findAll();
     }
+    
+    public int registerCar(Car car) {
+        return repository.save(car);
+    }
 }
