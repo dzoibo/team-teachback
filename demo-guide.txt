@@ -1,0 +1,81 @@
+GARAGE APP - DEMO GUIDE
+=======================
+
+Hey team! Here's the app we'll use during the teachback. It's one small garage app that grows through the talk: John shows it with plain Spring, Ivan shows it with Spring Boot, and Cynthia connects it to PostgreSQL.
+
+Each demo takes about 2 minutes and proves the key idea of your part. Here's what was built for you and how to run it.
+
+
+-------------------------------------------------
+PART 1 - JOHN (Spring Core)
+-------------------------------------------------
+
+The idea to land:
+"Don't create your dependencies, receive them." Spring builds the objects and wires them for us.
+
+What's in the app for you:
+- AppConfig (package com.teachback.core): a configuration class with @Bean methods. It tells Spring to create a CarRepository (the in-memory one) and a RepairService.
+- CoreDemo: starts the Spring container with new AnnotationConfigApplicationContext(AppConfig.class), asks it for RepairService, and repairs car 42.
+- RepairService gets its CarRepository through its constructor and never calls "new". That's dependency injection.
+
+How to run it:
+Right-click CoreDemo > Run As > Java Application.
+Not "Spring Boot App": this part is plain Spring on purpose.
+
+What you'll see in the console:
+  === Part 1 - Spring Core: the IoC container ===
+  [container] CarRepository -> InMemoryCarRepository
+  [container] RepairService -> RepairService (injected)
+  Repairing Honda Civic for Paul
+  [container] Same instance both times? true
+
+What to say:
+1. Open AppConfig: we only DECLARE the beans. Spring creates them and passes the repository into RepairService.
+2. Run CoreDemo: the container works like a map, type -> ready-to-use object.
+3. "We never wrote new RepairService(). And it's a singleton: same instance every time."
+4. Hand-off: "Spring Boot does exactly this, automatically. Over to Ivan."
+
+
+-------------------------------------------------
+PART 3 - CYNTHIA (Spring JDBC)
+-------------------------------------------------
+
+The idea to land:
+"You write the SQL, JdbcTemplate handles the rest." Connecting to a real database takes almost no code.
+
+Before the demo (one time only, on your PC):
+- In pgAdmin, create a database called "garage".
+- In src/main/resources/application.yml, put your own PostgreSQL username and password.
+
+What's new compared to Ivan's version:
+- pom.xml: two dependencies, spring-boot-starter-jdbc and the PostgreSQL driver.
+- application.yml: three settings (URL, username, password). With those, Boot creates the connection pool and the JdbcTemplate by itself.
+- schema.sql + data.sql: create the "car" table and add Marie's and Paul's cars. They run at every startup, so each demo starts from a clean table.
+- JdbcCarRepository: the same CarRepository as before, but talking to PostgreSQL. update() saves a car, queryForObject() and query() read cars, and a RowMapper turns each row into a Car.
+- RepairService didn't change at all: we just swapped memory for the database.
+
+How to run it:
+Right-click GarageApplication > Run As > Spring Boot App.
+Look for "HikariPool-1 - Start completed" in the console: that's the database connection Boot created.
+
+What to show:
+1. Open http://localhost:8080/cars : Marie and Paul, read from PostgreSQL.
+2. Open http://localhost:8080/cars/alisha : "Rows inserted: 1". Alisha's Toyota Corolla is saved.
+3. Open /cars again: 3 cars now.
+4. In pgAdmin, open garage > Schemas > public > Tables > car > View Data: the row "1007 | Toyota | Corolla | Alisha" is there.
+
+Note: open /cars/alisha only once per run. Restart the app to reset the table.
+
+What to say:
+"Two dependencies, three settings, one SQL query. No connection code. And RepairService hasn't changed since John's part."
+Then go on to @Transactional with the slides.
+
+
+-------------------------------------------------
+THE BIG PICTURE
+-------------------------------------------------
+
+John    -> Spring creates and injects our objects.        Proof: no "new" in our code.
+Cynthia -> JdbcTemplate does the database work.           Proof: PostgreSQL plugged in, RepairService unchanged.
+
+Run your demo once before the day, and ping me if something doesn't start!
